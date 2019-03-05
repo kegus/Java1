@@ -8,8 +8,70 @@ public class Praktika {
     static Random rnd = new Random();
     public static void main(String[] args) {
         //guessNumber();
-        guessWord();
+        //guessWord();
+        miniCalc();
         sc.close();
+    }
+    private static double[][] find_numbers(String[] request){
+        int count_operations = 0;
+        double[][] res = new double[request.length / 2 + 1][2];
+        for (String item: request) {
+            if(!(item.equals("+")||item.equals("-")||item.equals("*")||item.equals("/")))
+                res[count_operations][0] = Integer.parseInt(item);
+            else {
+                if(item.equals("+")) res[count_operations][1] = 1;
+                else if(item.equals("-")) res[count_operations][1] = 2;
+                else if(item.equals("*")) res[count_operations][1] = 3;
+                else res[count_operations][1] = 4;
+                count_operations++;
+            }
+        }
+        return res;
+    }
+    private static double getNextResult(double left, double right, double operations){
+        double res;
+        switch ((int)operations) {
+            case 1:
+                res = left + right;
+                break;
+            case 2:
+                res = left - right;
+                break;
+            case 3:
+                res = left * right;
+                break;
+            case 4:
+                res = left / right;
+                break;
+            default:
+                res = left;
+        }
+        return res;
+    }
+    private static void sort_numbers(double[][] numbers) {
+
+    }
+    private static void miniCalc() {
+        while (true) {
+            System.out.println("Введите запрос");
+            String[] request = sc.nextLine().split(" ");
+            if(request.length < 3 || request.length % 2 == 0){
+                if(request.length > 0 && request[0].equals("exit")) {
+                    System.out.println("До свидания");
+                    break;
+                } else {
+                    System.out.println("Ошибка в запросе");
+                    continue;
+                }
+            }
+            double[][] numbers = find_numbers(request);
+            sort_numbers(numbers);
+            double result = numbers[0][0];
+            for (int i = 1; i < numbers.length; i++) {
+                result = getNextResult(result, numbers[i][0], numbers[i - 1][1]);
+            }
+            System.out.println(result);
+        }
     }
     private static void guessNumber(){
         int n_try = 3;
@@ -41,7 +103,7 @@ public class Praktika {
 
         System.out.println("Угадайте слово");
         String guess_word;
-        System.out.println(secret_word);
+        //System.out.println(secret_word);
         while (true) {
             guess_word = sc.nextLine();
             if (guess_word.equals(secret_word)) {
