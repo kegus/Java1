@@ -31,14 +31,30 @@ public class Praktika {
         if (n_try == 0)
             System.out.println("Вы проиграли");
     }
-    private static void guessWord(){
+    private static void guessWord() {
         String[] words = {"apple", "orange", "lemon", "banana", "apricot", "avocado", "broccoli", "carrot", "cherry", "garlic", "grape", "melon", "leak", "kiwi", "mango", "mushroom", "nut", "olive", "pea", "peanut", "pear", "pepper", "pineapple", "pumpkin", "potato"};
         String secret_word = words[rnd.nextInt(words.length)];
+        char[] arr_secret_word = secret_word.toCharArray();
+        char[] arr_guesed_char = new char[15];
+        for (int i = 0; i < arr_guesed_char.length; i++) arr_guesed_char[i] = '*';
+
+
         System.out.println("Угадайте слово");
         String guess_word;
         System.out.println(secret_word);
-        guess_word = sc.nextLine();
-        if(guess_word.equals(secret_word))
-            System.out.println("Вы угадали");
+        while (true) {
+            guess_word = sc.nextLine();
+            if (guess_word.equals(secret_word)) {
+                System.out.println("Вы угадали");
+                return;
+            } else {
+                char[] arr_guess_word = guess_word.toCharArray();
+                int min_length = arr_guess_word.length > arr_secret_word.length ? arr_secret_word.length : arr_guess_word.length;
+                for (int i = 0; i < min_length; i++)
+                    if (arr_guess_word[i] == arr_secret_word[i]) arr_guesed_char[i] = arr_guess_word[i];
+                System.out.println(String.valueOf(arr_guesed_char));
+            }
+
+        }
     }
 }
