@@ -1,5 +1,6 @@
 package Lesson3;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -7,25 +8,31 @@ public class Praktika {
     static Scanner sc = new Scanner(System.in);
     static Random rnd = new Random();
     public static void main(String[] args) {
-        //guessNumber();
-        //guessWord();
+        //п. 1
+        guessNumber();
+        //п. 2
+        guessWord();
+        //доп дз
         miniCalc();
         sc.close();
     }
     private static double[][] find_numbers(String[] request){
         int count_operations = 0;
+        int last_operation = 0;
         double[][] res = new double[request.length / 2 + 1][2];
         for (String item: request) {
             if(!(item.equals("+")||item.equals("-")||item.equals("*")||item.equals("/")))
-                res[count_operations][0] = Integer.parseInt(item);
+                res[count_operations][0] = Double.parseDouble(item);
             else {
-                if(item.equals("+")) res[count_operations][1] = 1;
-                else if(item.equals("-")) res[count_operations][1] = 2;
-                else if(item.equals("*")) res[count_operations][1] = 3;
-                else res[count_operations][1] = 4;
+                if(item.equals("+")) last_operation = 1;
+                else if(item.equals("-")) last_operation = 2;
+                else if(item.equals("*")) last_operation = 3;
+                else last_operation = 4;
+                res[count_operations][1] = last_operation;
                 count_operations++;
             }
         }
+        //res[count_operations][1] = last_operation;
         return res;
     }
     private static double getNextResult(double left, double right, double operations){
@@ -49,7 +56,25 @@ public class Praktika {
         return res;
     }
     private static void sort_numbers(double[][] numbers) {
+        /*double temp_numbers;
+        double temp_operation;
+        for (int i = 0; i < numbers.length; i++)
+            for (int j = i + 1; j < numbers.length-1; j++)
+                if ((numbers[i][1] == 1 || numbers[i][1] == 2) && (numbers[j][1] == 3 || numbers[j][1] == 4)) {
+                    temp_numbers = numbers[i][0];
+                    temp_operation = numbers[i][1];
+                    numbers[i][0] = numbers[j][0];
+                    numbers[i][1] = numbers[j][1];
+                    numbers[j][0] = temp_numbers;
+                    numbers[j][1] = temp_operation;
 
+                    temp_numbers = numbers[j][0];
+                    temp_operation = numbers[j][1];
+                    numbers[j][0] = numbers[j+1][0];
+                    numbers[j][1] = temp_operation;
+                    numbers[j+1][0] = temp_numbers;
+                    numbers[j+1][1] = numbers[j+1][1];
+                }*/
     }
     private static void miniCalc() {
         while (true) {
@@ -65,7 +90,8 @@ public class Praktika {
                 }
             }
             double[][] numbers = find_numbers(request);
-            sort_numbers(numbers);
+            sort_numbers(numbers);  // не получается получить правильную сортировку... ((
+                                    // поэтому 2 + 2 * 2 работает неправильно
             double result = numbers[0][0];
             for (int i = 1; i < numbers.length; i++) {
                 result = getNextResult(result, numbers[i][0], numbers[i - 1][1]);
