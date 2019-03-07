@@ -16,23 +16,84 @@ public class Praktika {
         miniCalc();
         sc.close();
     }
+    private static double calculate(String[] request, int nItem, double res){
+        String item = request[nItem];
+        if(nItem % 2 == 0){
+            res = Double.parseDouble(item);
+            if(nItem < request.length-1){
+                if(request[nItem+1].equals("*")||request[nItem+1].equals("/")){
+                    if (request[nItem + 1].equals("+"))
+                        res += calculate(request, nItem + 2, res);
+                    else if (request[nItem + 1].equals("-"))
+                        res -= calculate(request, nItem + 2, res);
+                    else if (request[nItem + 1].equals("*"))
+                        res *= calculate(request, nItem + 2, res);
+                    else
+                        res /= calculate(request, nItem + 2, res);
+                } else {
+                    if (request[nItem + 1].equals("+"))
+                        res += calculate(request, nItem + 2, res);
+                    else if (request[nItem + 1].equals("-"))
+                        res -= calculate(request, nItem + 2, res);
+                    else if (request[nItem + 1].equals("*"))
+                        res *= calculate(request, nItem + 2, res);
+                    else
+                        res /= calculate(request, nItem + 2, res);
+                }
+            } else {
+                return res;
+            }
+        }
+        return res;
+    }
+    private static void miniCalc() {
+        while (true) {
+            System.out.println("Введите запрос");
+            String[] request = sc.nextLine().split(" ");
+            if(request.length < 3 || request.length % 2 == 0){
+                if(request.length > 0 && request[0].equals("exit")) {
+                    System.out.println("До свидания");
+                    break;
+                } else {
+                    System.out.println("Ошибка в запросе");
+                    continue;
+                }
+            }
+            double result = calculate(request, 0, 0);
+            // всё равно не понял как приоритет расставить... ((
+            // теперь 2 * 2 + 2 работает неправильно
+            // Да и вообще много неправильно.
+            // Вообщем должен признать, что калькулятор мне сейчас не по зубам ((
+            System.out.println(result);
+
+
+            /*double[][] numbers = find_numbers(request);
+            sort_numbers(numbers);  // не получается получить правильную сортировку... ((
+                                    // поэтому 2 + 2 * 2 работает неправильно
+            double result = numbers[0][0];
+            for (int i = 1; i < numbers.length; i++) {
+                result = getNextResult(result, numbers[i][0], numbers[i - 1][1]);
+            }*/
+        }
+    }
     private static double[][] find_numbers(String[] request){
         int count_operations = 0;
-        int last_operation = 0;
-        double[][] res = new double[request.length / 2 + 1][2];
+        int last_operation = 1; // + для 1-го числа
+        double[][] res = new double[request.length / 2 + 1][3];
         for (String item: request) {
-            if(!(item.equals("+")||item.equals("-")||item.equals("*")||item.equals("/")))
+            if(!(item.equals("+")||item.equals("-")||item.equals("*")||item.equals("/"))) {
                 res[count_operations][0] = Double.parseDouble(item);
-            else {
+                res[count_operations][1] = last_operation;
+            } else {
                 if(item.equals("+")) last_operation = 1;
                 else if(item.equals("-")) last_operation = 2;
                 else if(item.equals("*")) last_operation = 3;
                 else last_operation = 4;
-                res[count_operations][1] = last_operation;
+                res[count_operations][2] = last_operation;
                 count_operations++;
             }
         }
-        //res[count_operations][1] = last_operation;
+        res[count_operations][2] = 1;
         return res;
     }
     private static double getNextResult(double left, double right, double operations){
@@ -56,48 +117,23 @@ public class Praktika {
         return res;
     }
     private static void sort_numbers(double[][] numbers) {
-        /*double temp_numbers;
+        double temp_numbers;
         double temp_operation;
+        double temp_last_operation;
         for (int i = 0; i < numbers.length; i++)
             for (int j = i + 1; j < numbers.length-1; j++)
-                if ((numbers[i][1] == 1 || numbers[i][1] == 2) && (numbers[j][1] == 3 || numbers[j][1] == 4)) {
+                if ((numbers[i][2] == 1 || numbers[i][2] == 2) && (numbers[j][2] == 3 || numbers[j][2] == 4)) {
                     temp_numbers = numbers[i][0];
-                    temp_operation = numbers[i][1];
+                    temp_last_operation = numbers[i][1];
+                    temp_operation = numbers[i][2];
                     numbers[i][0] = numbers[j][0];
                     numbers[i][1] = numbers[j][1];
+                    numbers[i][2] = numbers[j][2];
                     numbers[j][0] = temp_numbers;
-                    numbers[j][1] = temp_operation;
+                    numbers[j][1] = temp_last_operation;
+                    numbers[j][2] = temp_operation;
 
-                    temp_numbers = numbers[j][0];
-                    temp_operation = numbers[j][1];
-                    numbers[j][0] = numbers[j+1][0];
-                    numbers[j][1] = temp_operation;
-                    numbers[j+1][0] = temp_numbers;
-                    numbers[j+1][1] = numbers[j+1][1];
-                }*/
-    }
-    private static void miniCalc() {
-        while (true) {
-            System.out.println("Введите запрос");
-            String[] request = sc.nextLine().split(" ");
-            if(request.length < 3 || request.length % 2 == 0){
-                if(request.length > 0 && request[0].equals("exit")) {
-                    System.out.println("До свидания");
-                    break;
-                } else {
-                    System.out.println("Ошибка в запросе");
-                    continue;
                 }
-            }
-            double[][] numbers = find_numbers(request);
-            sort_numbers(numbers);  // не получается получить правильную сортировку... ((
-                                    // поэтому 2 + 2 * 2 работает неправильно
-            double result = numbers[0][0];
-            for (int i = 1; i < numbers.length; i++) {
-                result = getNextResult(result, numbers[i][0], numbers[i - 1][1]);
-            }
-            System.out.println(result);
-        }
     }
     private static void guessNumber(){
         int n_try = 3;
