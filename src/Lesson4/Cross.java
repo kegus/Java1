@@ -1,23 +1,22 @@
 package Lesson4;
 
-import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Cross {
-    static int SIZE_X = 7;
-    static int SIZE_Y = 5;
-    static int COUNT_DOT_FOR_WIN = 4;
+    private static int SIZE_X = 7;
+    private static int SIZE_Y = 5;
+    private static int COUNT_DOT_FOR_WIN = 4;
 
-    static char[][] field = new char[SIZE_Y][SIZE_X];
+    private static char[][] field = new char[SIZE_Y][SIZE_X];
 
     private static char PLAYER_DOT = 'X';
     private static char AI_DOT = 'O';
     private static char EMPTY_DOT = '.';
 
-    static Scanner sc = new Scanner(System.in);
-    static Random rnd = new Random();
-    static int last_x, last_y;
+    private static Scanner sc = new Scanner(System.in);
+    private static Random rnd = new Random();
+    private static int last_x, last_y;
 
     // заполнить поле
     private static void initField() {
@@ -54,7 +53,12 @@ public class Cross {
     }
     // проверка валидности введённого хода
     private static boolean isStepValid(String step){
-        return !(step.length()!=3||getStepX(step)==0||getStepY(step)==0);
+        if(step.length()==3){
+            int x = getStepX(step);
+            int y = getStepY(step);
+            if(x > 0 && y > 0) return isCellValid(y-1,x-1);
+        }
+        return false;
     }
     private static int getStepX(String step){
         int res = 0;
@@ -93,98 +97,55 @@ public class Cross {
         last_y = y;
         return true;
     }
-    // ход ПК
-    private static void aiStep() {
-        int x = -1;
-        int y = -1;
-        for (int k = COUNT_DOT_FOR_WIN; k > COUNT_DOT_FOR_WIN-2; k--) {
-            // проверяем возможность победы AI или Игрока
-            if(k == COUNT_DOT_FOR_WIN) {
-                if (x < 0 || y < 0)
-                    chek1:for (int j = 0; j < SIZE_X; j++) {
-                        for (int i = 0; i < SIZE_Y; i++) {
-                            if (isCellValid(i, j)) {
-                                field[i][j] = AI_DOT;
-                                if (checkWin(i, j, AI_DOT, k)) {
-                                    x = j;
-                                    y = i;
-                                    field[i][j] = EMPTY_DOT;
-                                    break chek1;
-                                }
-                                field[i][j] = EMPTY_DOT;
-                            }
-                        }
+    // проверка хода на комбинацию из dot_count символов
+    private static void calculateAIstep(int[] xy, int dot_count, char sym){
+        chek:for (int j = 0; j < SIZE_X; j++) {
+            for (int i = 0; i < SIZE_Y; i++) {
+                if (isCellValid(i, j)) {
+                    field[i][j] = sym;
+                    if (checkWin(i, j, sym, dot_count)) {
+                        xy[0] = j;
+                        xy[1] = i;
+                        field[i][j] = EMPTY_DOT;
+                        break chek;
                     }
-                if (x < 0 || y < 0)
-                    chek2:for (int j = 0; j < SIZE_X; j++) {
-                        for (int i = 0; i < SIZE_Y; i++) {
-                            if (isCellValid(i, j)) {
-                                field[i][j] = PLAYER_DOT;
-                                if (checkWin(i, j, PLAYER_DOT, k)) {
-                                    x = j;
-                                    y = i;
-                                    field[i][j] = EMPTY_DOT;
-                                    break chek2;
-                                }
-                                field[i][j] = EMPTY_DOT;
-                            }
-                        }
-                    }
-            } else {
-                // проверяем возможность вилки Игрока
-                if (x < 0 || y < 0)
-                    chek1:for (int j = 0; j < SIZE_X; j++) {
-                        for (int i = 0; i < SIZE_Y; i++) {
-                            if (isCellValid(i, j)) {
-                                field[i][j] = AI_DOT;
-                                if (checkWin(i, j, AI_DOT, k)) {
-                                    x = j;
-                                    y = i;
-                                    field[i][j] = EMPTY_DOT;
-                                    break chek1;
-                                }
-                                field[i][j] = EMPTY_DOT;
-                            }
-                        }
-                    }
-                // проверяем возможность вилки AI
-                if (x < 0 || y < 0)
-                    chek2:for (int j = 0; j < SIZE_X; j++) {
-                        for (int i = 0; i < SIZE_Y; i++) {
-                            if (isCellValid(i, j)) {
-                                field[i][j] = PLAYER_DOT;
-                                if (checkWin(i, j, PLAYER_DOT, k)) {
-                                    x = j;
-                                    y = i;
-                                    field[i][j] = EMPTY_DOT;
-                                    break chek2;
-                                }
-                                field[i][j] = EMPTY_DOT;
-                            }
-                        }
-                    }
+                    field[i][j] = EMPTY_DOT;
+                }
             }
         }
-        if(x<0||y<0)
+    }
+    // ход ПК
+    private static void aiStep() {
+        int[] xy = {-1,-1};
+        // проверяем возможность победы AI
+        calculateAIstep(xy, COUNT_DOT_FOR_WIN, AI_DOT);
+        // проверяем возможность победы Игрока
+        if (xy[0] < 0 || xy[1] < 0) calculateAIstep(xy, COUNT_DOT_FOR_WIN, PLAYER_DOT);
+        // проверяем возможность вилки Игрока
+        if (xy[0] < 0 || xy[1] < 0) calculateAIstep(xy, COUNT_DOT_FOR_WIN-1, PLAYER_DOT);
+        // проверяем возможность вилки AI
+        if (xy[0] < 0 || xy[1] < 0) calculateAIstep(xy, COUNT_DOT_FOR_WIN-1, AI_DOT);
+        if(xy[0] < 0 || xy[1] < 0)
         do {
-            x = rnd.nextInt(SIZE_X);
-            y = rnd.nextInt(SIZE_Y);
-        } while (!isCellValid(y,x));
-        setSym(y, x, AI_DOT);
-        last_x = x;
-        last_y = y;
+            xy[0] = rnd.nextInt(SIZE_X);
+            xy[1] = rnd.nextInt(SIZE_Y);
+        } while (!isCellValid(xy[1],xy[0]));
+        setSym(xy[1], xy[0], AI_DOT);
+        last_x = xy[0];
+        last_y = xy[1];
     }
     // если не встретили пустую ячейку это значит что всё поле заполнено
     private static boolean isDraw() {
         for (int i = 0; i < SIZE_Y; i++) for (int j = 0; j < SIZE_X; j++) if(field[i][j] == EMPTY_DOT) return false;
         return true;
     }
+    // проверка горизонталей
     private static boolean checkHorizontal(int y, int x, char sym, int dot_count){
         int find_count;
         for (int i = x-dot_count+1; i < x+dot_count-1; i++) {
             find_count = 0;
             for (int j = 0; j < dot_count; j++) {
-                if(i+j>-1 && i+j < field[0].length){
+                if(i+j>-1 && i+j < SIZE_X){
                     if(field[y][i+j] == sym) find_count++;
                     else break;
                     if(find_count==dot_count) return true;
@@ -193,12 +154,13 @@ public class Cross {
         }
         return false;
     }
+    // проверка вертикалей
     private static boolean checkVertical(int y, int x, char sym, int dot_count){
         int find_count;
         for (int j = y-dot_count+1; j < y+dot_count-1; j++) {
             find_count = 0;
             for (int i = 0; i < dot_count; i++) {
-                if (i + j > -1 && i + j < field.length) {
+                if (i + j > -1 && i + j < SIZE_Y) {
                     if (field[i + j][x] == sym) find_count++;
                     else break;
                     if (find_count == dot_count) return true;
@@ -207,13 +169,14 @@ public class Cross {
         }
         return false;
     }
+    // проверка диагоналей
     private static boolean checkDiagonal(int y, int x, char sym, int dot_count){
         int find_count;
         for (int i = y-dot_count+1, j = x-dot_count+1; i < y+dot_count-1 && j < x+dot_count-1; i++,j++) {
             find_count = 0;
             for (int k = 0; k < dot_count; k++) {
                 //int xx = i+j;
-                if (i+k > -1 && i+k < field.length && j+k > -1 && j+k < field[0].length) {
+                if (i+k > -1 && i+k < SIZE_Y && j+k > -1 && j+k < SIZE_X) {
                     int xx = i+k;
                     int yy = j+k;
                     if (field[xx][yy] == sym) find_count++;
@@ -226,7 +189,7 @@ public class Cross {
             find_count = 0;
             for (int k = 0; k < dot_count; k++) {
                 //int xx = i+j;
-                if (i+k > -1 && i+k < field.length && j-k > -1 && j-k < field[0].length) {
+                if (i+k > -1 && i+k < SIZE_Y && j-k > -1 && j-k < SIZE_X) {
                     int xx = i+k;
                     int yy = j-k;
                     if (field[xx][yy] == sym) find_count++;
@@ -237,10 +200,12 @@ public class Cross {
         }
         return false;
     }
+    // проверка победы
     private static boolean checkWin(int y, int x, char sym, int dot_count) {
         return checkHorizontal(y,x,sym,dot_count) || checkVertical(y,x,sym,dot_count) || checkDiagonal(y,x,sym,dot_count);
     }
-    public static void cross() {
+    // main
+    private static void cross() {
         exit: while (true){
             System.out.println();
             System.out.println("Сыграем в крестики-нолики до "+COUNT_DOT_FOR_WIN);
