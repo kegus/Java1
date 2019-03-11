@@ -5,18 +5,130 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Praktika {
-    static Scanner sc = new Scanner(System.in);
-    static Random rnd = new Random();
+    private static Scanner sc = new Scanner(System.in);
+    private static Random rnd = new Random();
     public static void main(String[] args) {
         //п. 1
-        guessNumber();
+        //guessNumber();
         //п. 2
-        guessWord();
+        //guessWord();
         //доп дз
         miniCalc();
         sc.close();
     }
-    private static double calculate(String[] request, int nItem, double res){
+    private static String openBrackets(String s) {
+        if (!s.contains("(") && !s.contains(")")) return s;
+        StringBuilder sb = new StringBuilder();
+        int bracketCount = 0;
+        int start = 0;
+        int end = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '(') {
+                if (bracketCount == 0) {
+                    start = i + 1;
+                    sb.append(s.substring(end, i));
+                }
+                bracketCount++;
+            } else if (s.charAt(i) == ')') {
+                if (bracketCount == 0) {
+                    throw new RuntimeException("Closing bracket without an opening one.");
+                }
+                bracketCount--;
+                if (bracketCount == 0) {
+                    sb.append(String.valueOf(calculate(s.substring(start, i))));
+                    end = i + 1;
+                }
+            }
+        }
+        if (bracketCount != 0) {
+            throw new RuntimeException("More opening brackets than closing ones.");
+        }
+        sb.append(s.substring(end));
+        return sb.toString();
+    }
+    private static double calc(String[] tokens) {
+        if (tokens.length == 3) {
+            switch (tokens[1]) {
+                case "+":
+                    return Double.parseDouble(tokens[0]) + Double.parseDouble(tokens[2]);
+                case "-":
+                    return Double.parseDouble(tokens[0]) - Double.parseDouble(tokens[2]);
+                case "*":
+                    return Double.parseDouble(tokens[0]) * Double.parseDouble(tokens[2]);
+                case "/":
+                    return Double.parseDouble(tokens[0]) / Double.parseDouble(tokens[2]);
+                default:
+                    throw new RuntimeException("No operator found where operator was expected.");
+            }
+        }
+        String[] rest = new String[tokens.length - 2];
+        System.arraycopy(tokens, 2, rest, 0, rest.length);
+        switch (tokens[1]) {
+            case "+":
+                return Double.parseDouble(tokens[0]) + calc(rest);
+            case "-":
+                return Double.parseDouble(tokens[0]) - calc(rest);
+            case "*":
+                rest[0] = String.valueOf(Double.parseDouble(tokens[0]) * Double.parseDouble(tokens[2]));
+                return calc(rest);
+            case "/":
+                rest[0] = String.valueOf(Double.parseDouble(tokens[0]) / Double.parseDouble(tokens[2]));
+                return calc(rest);
+            default:
+                throw new RuntimeException("No operator found where operator was expected.");
+        }
+    }
+    private static double calculate(String s) {
+        String toCalc = openBrackets(s);
+        String[] tokens = toCalc.split(" ");
+        return calc(tokens);
+    }
+    private static void miniCalc() {
+        String s;
+        while (true) {
+            System.out.println("Enter your expression to calculate. " +
+                    "Separate operands from operators by space, no space needed between operands and brackets. " +
+                    "Enter 'Q' to exit: ");
+            s = sc.nextLine();
+            if (s.equalsIgnoreCase("q")) {
+                break;
+            }
+            try {
+                System.out.println(s + " = " + calculate(s));
+            } catch (RuntimeException e) {
+                System.out.println("Invalid input: " + e.getMessage() + " Please try again.");
+            }
+        }
+        /*while (true) {
+            System.out.println("Введите запрос");
+            String[] request = sc.nextLine().split(" ");
+            if(request.length < 3 || request.length % 2 == 0){
+                if(request.length > 0 && request[0].equals("exit")) {
+                    System.out.println("До свидания");
+                    break;
+                } else {
+                    System.out.println("Ошибка в запросе");
+                    continue;
+                }
+            }
+            double result = calculate(request, 0, 0);
+            // всё равно не понял как приоритет расставить... ((
+            // теперь 2 * 2 + 2 работает неправильно
+            // Да и вообще много неправильно.
+            // Вообщем должен признать, что калькулятор мне сейчас не по зубам ((
+            System.out.println(result);*/
+
+
+            /*double[][] numbers = find_numbers(request);
+            sort_numbers(numbers);  // не получается получить правильную сортировку... ((
+                                    // поэтому 2 + 2 * 2 работает неправильно
+            double result = numbers[0][0];
+            for (int i = 1; i < numbers.length; i++) {
+                result = getNextResult(result, numbers[i][0], numbers[i - 1][1]);
+            }*/
+        //}
+    }
+    /*private static double calculate(String[] request, int nItem, double res){
         String item = request[nItem];
         if(nItem % 2 == 0){
             res = Double.parseDouble(item);
@@ -45,37 +157,7 @@ public class Praktika {
             }
         }
         return res;
-    }
-    private static void miniCalc() {
-        while (true) {
-            System.out.println("Введите запрос");
-            String[] request = sc.nextLine().split(" ");
-            if(request.length < 3 || request.length % 2 == 0){
-                if(request.length > 0 && request[0].equals("exit")) {
-                    System.out.println("До свидания");
-                    break;
-                } else {
-                    System.out.println("Ошибка в запросе");
-                    continue;
-                }
-            }
-            double result = calculate(request, 0, 0);
-            // всё равно не понял как приоритет расставить... ((
-            // теперь 2 * 2 + 2 работает неправильно
-            // Да и вообще много неправильно.
-            // Вообщем должен признать, что калькулятор мне сейчас не по зубам ((
-            System.out.println(result);
-
-
-            /*double[][] numbers = find_numbers(request);
-            sort_numbers(numbers);  // не получается получить правильную сортировку... ((
-                                    // поэтому 2 + 2 * 2 работает неправильно
-            double result = numbers[0][0];
-            for (int i = 1; i < numbers.length; i++) {
-                result = getNextResult(result, numbers[i][0], numbers[i - 1][1]);
-            }*/
-        }
-    }
+    }*/
     private static double[][] find_numbers(String[] request){
         int count_operations = 0;
         int last_operation = 1; // + для 1-го числа
@@ -144,7 +226,7 @@ public class Praktika {
             n_guess = sc.nextInt();
             if(rnd_num > n_guess)
                 System.out.println("Загаданное число больше");
-            else if(rnd_num > n_guess)
+            else if(rnd_num < n_guess)
                 System.out.println("Загаданное число меньше");
             else {
                 System.out.println("Вы угадали");
