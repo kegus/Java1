@@ -99,17 +99,19 @@ public class Cross {
     }
     // проверка хода на комбинацию из dot_count символов
     private static void calculateAIstep(int[] xy, int dot_count, char sym){
-        chek:for (int j = 0; j < SIZE_X; j++) {
-            for (int i = 0; i < SIZE_Y; i++) {
-                if (isCellValid(i, j)) {
-                    field[i][j] = sym;
-                    if (checkWin(i, j, sym, dot_count)) {
-                        xy[0] = j;
-                        xy[1] = i;
+        chek: for (int k = 0; k < 3; k++) {
+            for (int j = 0; j < SIZE_X; j++) {
+                for (int i = 0; i < SIZE_Y; i++) {
+                    if (isCellValid(i, j)) {
+                        field[i][j] = sym;
+                        if (checkProbableWin(i, j, sym, dot_count, k)) {
+                            xy[0] = i;
+                            xy[1] = j;
+                            field[i][j] = EMPTY_DOT;
+                            break chek;
+                        }
                         field[i][j] = EMPTY_DOT;
-                        break chek;
                     }
-                    field[i][j] = EMPTY_DOT;
                 }
             }
         }
@@ -121,20 +123,23 @@ public class Cross {
         calculateAIstep(xy, COUNT_DOT_FOR_WIN, AI_DOT);
         // проверяем возможность победы Игрока
         if (xy[0] < 0 || xy[1] < 0) calculateAIstep(xy, COUNT_DOT_FOR_WIN, PLAYER_DOT);
+        if (xy[0] < 0 || xy[1] < 0)
         for (int i = COUNT_DOT_FOR_WIN-1; i > 1; i--) {
             // проверяем возможность вилки Игрока
-            if (xy[0] < 0 || xy[1] < 0) calculateAIstep(xy, i, PLAYER_DOT);
+            calculateAIstep(xy, i, PLAYER_DOT);
+            if (!(xy[0] < 0 || xy[1] < 0)) break;
             // проверяем возможность вилки AI
-            if (xy[0] < 0 || xy[1] < 0) calculateAIstep(xy, i, AI_DOT);
+            calculateAIstep(xy, i, AI_DOT);
+            if (!(xy[0] < 0 || xy[1] < 0)) break;
         }
         if(xy[0] < 0 || xy[1] < 0)
         do {
-            xy[0] = rnd.nextInt(SIZE_X);
-            xy[1] = rnd.nextInt(SIZE_Y);
+            xy[1] = rnd.nextInt(SIZE_X);
+            xy[0] = rnd.nextInt(SIZE_Y);
         } while (!isCellValid(xy[1],xy[0]));
-        setSym(xy[1], xy[0], AI_DOT);
-        last_x = xy[0];
-        last_y = xy[1];
+        setSym(xy[0], xy[1], AI_DOT);
+        last_x = xy[1];
+        last_y = xy[0];
     }
     // если не встретили пустую ячейку это значит что всё поле заполнено
     private static boolean isDraw() {
@@ -179,9 +184,9 @@ public class Cross {
             for (int k = 0; k < dot_count; k++) {
                 //int xx = i+j;
                 if (i+k > -1 && i+k < SIZE_Y && j+k > -1 && j+k < SIZE_X) {
-                    int xx = i+k;
-                    int yy = j+k;
-                    if (field[xx][yy] == sym) find_count++;
+                    int yy = i+k;
+                    int xx = j+k;
+                    if (field[yy][xx] == sym) find_count++;
                     else break;
                     if (find_count == dot_count) return true;
                 } else break;
@@ -192,9 +197,9 @@ public class Cross {
             for (int k = 0; k < dot_count; k++) {
                 //int xx = i+j;
                 if (i+k > -1 && i+k < SIZE_Y && j-k > -1 && j-k < SIZE_X) {
-                    int xx = i+k;
-                    int yy = j-k;
-                    if (field[xx][yy] == sym) find_count++;
+                    int yy = i+k;
+                    int xx = j-k;
+                    if (field[yy][xx] == sym) find_count++;
                     else break;
                     if (find_count == dot_count) return true;
                 } else break;
@@ -204,7 +209,15 @@ public class Cross {
     }
     // проверка победы
     private static boolean checkWin(int y, int x, char sym, int dot_count) {
-        return checkHorizontal(y,x,sym,dot_count) || checkVertical(y,x,sym,dot_count) || checkDiagonal(y,x,sym,dot_count);
+        return (checkDiagonal(y,x,sym,dot_count) ||checkHorizontal(y,x,sym,dot_count) || checkVertical(y,x,sym,dot_count));
+    }
+    private static boolean checkProbableWin(int y, int x, char sym, int dot_count, int mode) {
+        switch (mode) {
+            case 0: return checkDiagonal(y,x,sym,dot_count);
+            case 1: return checkHorizontal(y,x,sym,dot_count);
+            case 2: return checkVertical(y,x,sym,dot_count);
+            default: return false;
+        }
     }
     // main
     private static void cross() {
