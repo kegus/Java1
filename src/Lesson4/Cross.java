@@ -99,9 +99,10 @@ public class Cross {
     }
     // проверка хода на комбинацию из dot_count символов
     private static void calculateAIstep(int[] xy, int dot_count, char sym){
+        int l = dot_count == COUNT_DOT_FOR_WIN ? 0 : 1;
         chek: for (int k = 0; k < 3; k++) {
-            for (int j = 0; j < SIZE_X; j++) {
-                for (int i = 0; i < SIZE_Y; i++) {
+            for (int j = l; j < SIZE_X-l; j++) {
+                for (int i = l; i < SIZE_Y-l; i++) {
                     if (isCellValid(i, j)) {
                         field[i][j] = sym;
                         if (checkProbableWin(i, j, sym, dot_count, k)) {
