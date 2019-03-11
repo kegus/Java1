@@ -4,9 +4,9 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Cross {
-    private static int SIZE_X = 7;
-    private static int SIZE_Y = 5;
-    private static int COUNT_DOT_FOR_WIN = 4;
+    private static int SIZE_X = 9;
+    private static int SIZE_Y = 9;
+    private static int COUNT_DOT_FOR_WIN = 5;
 
     private static char[][] field = new char[SIZE_Y][SIZE_X];
 
@@ -121,10 +121,12 @@ public class Cross {
         calculateAIstep(xy, COUNT_DOT_FOR_WIN, AI_DOT);
         // проверяем возможность победы Игрока
         if (xy[0] < 0 || xy[1] < 0) calculateAIstep(xy, COUNT_DOT_FOR_WIN, PLAYER_DOT);
-        // проверяем возможность вилки Игрока
-        if (xy[0] < 0 || xy[1] < 0) calculateAIstep(xy, COUNT_DOT_FOR_WIN-1, PLAYER_DOT);
-        // проверяем возможность вилки AI
-        if (xy[0] < 0 || xy[1] < 0) calculateAIstep(xy, COUNT_DOT_FOR_WIN-1, AI_DOT);
+        for (int i = COUNT_DOT_FOR_WIN-1; i > 1; i--) {
+            // проверяем возможность вилки Игрока
+            if (xy[0] < 0 || xy[1] < 0) calculateAIstep(xy, i, PLAYER_DOT);
+            // проверяем возможность вилки AI
+            if (xy[0] < 0 || xy[1] < 0) calculateAIstep(xy, i, AI_DOT);
+        }
         if(xy[0] < 0 || xy[1] < 0)
         do {
             xy[0] = rnd.nextInt(SIZE_X);
