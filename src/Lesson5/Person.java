@@ -41,5 +41,6 @@ public class Person {
     }
     public void printInfo(){
         System.out.printf("%s %s %s %s %d %d", this.FIO, this.doljnost, this.email, this.phone, this.salary, this.getAge());
+        System.out.println();
     }
 }
