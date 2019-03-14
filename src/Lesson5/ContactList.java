@@ -16,11 +16,14 @@ public class ContactList {
 
         // Доп дз
         while (true) {
-            System.out.println("Введите массив для анализа или q для выхода");
+            System.out.println("Введите массив для анализа или Q для выхода");
             String inputString = sc.nextLine();
-            if(inputString.equals("q")) break;
+            if(inputString.equalsIgnoreCase("q")) break;
             Forester forester = new Forester(inputString);
+            // метод 1
             forester.printResult();
+            // метод 2 (рекурсия)
+            forester.printResult2();
         }
         System.out.println("До свидания");
         sc.close();
