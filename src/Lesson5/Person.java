@@ -19,8 +19,8 @@ public class Person {
         this.doljnost = doljnost;
         this.email = email;
         this.phone = phone;
-        this.setSalary(salary);
-        this.setAge(age);
+        setSalary(salary);
+        setAge(age);
     }
     public void setSalary(int salary) {
         if(salary < 0) System.out.println("Некорректная зарплата.");
