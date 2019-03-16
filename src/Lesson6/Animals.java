@@ -6,9 +6,6 @@ abstract class PreAnimals {
     abstract void run(double actLimit);
     abstract void jump(double actLimit);
     abstract void swim(double actLimit);
-    public String getName(){
-        return name;
-    }
 }
 // родительский класс
 public class Animals extends PreAnimals {
@@ -52,16 +49,10 @@ public class Animals extends PreAnimals {
 class Dog extends Animals {
     public Dog(String name, double maxRun, double maxJump, double maxSwim) {
         super(name, maxRun, maxJump, maxSwim);
-        maxRun = 500;
-        maxJump = .5;
-        maxSwim = 10;
     }
 }
 class Cat extends Animals {
     public Cat(String name, double maxRun, double maxJump, double maxSwim) {
         super(name, maxRun, maxJump, maxSwim);
-        maxRun = 200;
-        maxJump = 2;
-        maxSwim = 0;
     }
 }
