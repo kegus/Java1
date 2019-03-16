@@ -4,11 +4,23 @@ public class ZooMarafon {
     public static void main(String[] args) {
         // Основноое дз
         Dog dog1 = new Dog("dog1");
+        dog1.setMaxRun(400);
+        dog1.setMaxJump(.5);
+        dog1.setMaxSwim(300);
         Dog dog2 = new Dog("dog2");
+        dog2.setMaxRun(600);
+        dog2.setMaxJump(1.5);
+        dog2.setMaxSwim(400);
         Cat cat1 = new Cat("cat1");
+        cat1.setMaxRun(200);
+        cat1.setMaxJump(2.5);
+        cat1.setMaxSwim(0);
         Cat cat2 = new Cat("cat2");
-        dog1.run(100);
-        dog2.run(1000);
+        cat2.setMaxRun(100);
+        cat2.setMaxJump(1.5);
+        cat2.setMaxSwim(0);
+        dog1.run(300);
+        dog2.run(500);
         cat1.run(50);
         cat2.run(5000);
         dog1.jump(200);

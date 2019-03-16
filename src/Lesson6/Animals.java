@@ -16,6 +16,16 @@ public class Animals extends PreAnimals {
     protected double maxJump;
     protected double maxSwim;
 
+    public void setMaxRun(double maxRun) {
+        this.maxRun = maxRun;
+    }
+    public void setMaxJump(double maxJump) {
+        this.maxJump = maxJump;
+    }
+    public void setMaxSwim(double maxSwim) {
+        this.maxSwim = maxSwim;
+    }
+
     public Animals(String name) {
         this.name = name;
     }
