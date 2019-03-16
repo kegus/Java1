@@ -3,7 +3,24 @@ package Lesson6;
 public class ZooMarafon {
     public static void main(String[] args) {
         // Основноое дз
-        Dog dog1 = new Dog("dog1");
+        Animals[] zoo = new Animals[4];
+        zoo[0] = new Dog("dog1",400,.5,300);
+        zoo[0].run(300);
+        zoo[0].jump(200);
+        zoo[0].swim(0.25);
+        zoo[1] = new Dog("dog2",600,1.5,400);
+        zoo[1].run(500);
+        zoo[1].jump(10);
+        zoo[1].swim(11);
+        zoo[2] = new Cat("cat1",200,2.5,0);
+        zoo[2].run(50);
+        zoo[2].jump(5);
+        zoo[2].swim(0);
+        zoo[3] = new Cat("cat2",100,1.5,0);
+        zoo[3].run(5000);
+        zoo[3].jump(20);
+        zoo[3].swim(10);
+        /*Dog dog1 = new Dog("dog1");
         dog1.setMaxRun(400);
         dog1.setMaxJump(.5);
         dog1.setMaxSwim(300);
@@ -30,7 +47,7 @@ public class ZooMarafon {
         dog1.swim(0.25);
         dog2.swim(11);
         cat1.swim(0);
-        cat2.swim(10);
+        cat2.swim(10);*/
 
         // Доп дз
         String s = "Предложение  один     Теперь предложение    два   Предложение   три";

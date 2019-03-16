@@ -26,8 +26,11 @@ public class Animals extends PreAnimals {
         this.maxSwim = maxSwim;
     }
 
-    public Animals(String name) {
+    public Animals(String name, double maxRun, double maxJump, double maxSwim) {
         this.name = name;
+        setMaxRun(maxRun);
+        setMaxJump(maxJump);
+        setMaxSwim(maxSwim);
     }
     @Override
     void run(double actLimit) {
@@ -47,16 +50,16 @@ public class Animals extends PreAnimals {
 }
 // потомки
 class Dog extends Animals {
-    public Dog(String name) {
-        super(name);
+    public Dog(String name, double maxRun, double maxJump, double maxSwim) {
+        super(name, maxRun, maxJump, maxSwim);
         maxRun = 500;
         maxJump = .5;
         maxSwim = 10;
     }
 }
 class Cat extends Animals {
-    public Cat(String name) {
-        super(name);
+    public Cat(String name, double maxRun, double maxJump, double maxSwim) {
+        super(name, maxRun, maxJump, maxSwim);
         maxRun = 200;
         maxJump = 2;
         maxSwim = 0;
