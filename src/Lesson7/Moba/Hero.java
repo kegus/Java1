@@ -1,24 +1,32 @@
 package Lesson7.Moba;
 
-public abstract class Hero {
-    protected int health;
+public  class Hero {
+    protected String name;
     protected String type;
+    protected int health;
     protected int damage;
+    protected boolean isKilled;
+    protected int countKill;
+    public boolean isFired;
 
-    public Hero(int health, String type, int damage) {
-        this.health = health;
+    public Hero(String name, String type, int health, int damage) {
+        this.name = name;
         this.type = type;
+        this.health = health;
         this.damage = damage;
     }
 
-    abstract void hit(Hero h);
-    abstract void healing(Hero h);
+    public void hit(Hero h){
+        if(h != this) h.causeDamage(damage);
+        if (h.isKilled) countKill++;
+    };
 
     void causeDamage(int damage) {
         health -= damage;
+        if (health <= 0) isKilled = true;
     }
 
     void info() {
-        System.out.println(health + " " + type + " " + damage);
+        System.out.println(name + " (" + type + ") HP: " + health + " D:" + damage+ " K:" + countKill + " Rip: " + isKilled);
     }
 }

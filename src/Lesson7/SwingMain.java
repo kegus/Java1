@@ -7,46 +7,62 @@ import java.awt.event.ActionListener;
 
 public class SwingMain {
     public static void main(String[] args) {
-        new MyWindow();
+        new MyWindow(null);
     }
 }
 
 class MyWindow extends JFrame {
-    public MyWindow() {
-        setTitle("Test window");
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setBounds(500,300,400,400);
-
+    public MyWindow parent;
+    public JLabel fioLabel;
+    public MyWindow(MyWindow parent) {
+        this.parent = parent;
+        setTitle(parent==null?"Test window":"Child");
+        setResizable(false);
+        setDefaultCloseOperation(parent==null?WindowConstants.EXIT_ON_CLOSE:WindowConstants.DISPOSE_ON_CLOSE);
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-        int sizeWidth = 800;
-        int sizeHeigth = 600;
+        int sizeWidth = 400;
+        int sizeHeigth = 300;
 
-        int locationX = (screenSize.width - sizeWidth) / 2;
-        int locationY = (screenSize.height - sizeHeigth) / 2;
+        int locationX = (screenSize.width - sizeWidth*(parent==null?2:1)) / 2;
+        int locationY = (screenSize.height - sizeHeigth*(parent==null?2:1)) / 2;
 
         setBounds(locationX,locationY,sizeWidth,sizeHeigth);
 
         setLayout(null);
 
+        fioLabel = new JLabel("FIO: ");
+        fioLabel.setBounds(20,20,200,30);
+
+        JTextArea areaFIO = new JTextArea("", 1, 1);;
+        if (parent!=null) {
+            add(fioLabel);
+            areaFIO.setBounds(60,27,150,18);
+            add(areaFIO);
+        }
+
+        MyWindow self = this;
+
         JButton jbt1 = new JButton("Ok");
-        jbt1.setBounds(100,50,80,30);
-
-        add(jbt1);
-
+        jbt1.setBounds(100,220,80,30);
         jbt1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(parent == null) {
+                    new MyWindow(self);
+                } else {
+                    parent.remove(parent.fioLabel);
+                    parent.fioLabel.setText("FIO: "+areaFIO.getText());
+                    parent.add(parent.fioLabel);
+                    parent.repaint();
+                    parent.revalidate();
+                    self.dispose();
+                }
                 System.out.println("Ok");
             }
         });
-
-
-//
-//        setResizable(false);
-//
-//        add(jbt1);
+        add(jbt1);
 
 //        JButton jbt1 = new JButton("Ok");
 //        JButton jbt2 = new JButton("Cancel");
@@ -70,7 +86,6 @@ class MyWindow extends JFrame {
 //        jPanel.add(jbt2);
 //
 //        add(jPanel, BorderLayout.NORTH);
-
 
         setVisible(true);
     }
