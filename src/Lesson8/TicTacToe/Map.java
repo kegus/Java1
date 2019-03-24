@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import Lesson4.Cross;
 
 public class Map extends JPanel {
 
@@ -12,18 +13,22 @@ public class Map extends JPanel {
 
     int fieldSizeX;
     int fieldSizeY;
+    int mode;
 
     int[][] field;
 
     int winLen;
 
-    int cellheigth;
+    int cellHeigth;
     int cellWidth;
+
+    boolean finished;
+
+    Cross cross;
 
     boolean isInitialized = false;
 
     public Map() {
-
         setBackground(Color.ORANGE);
 
         addMouseListener(new MouseAdapter() {
@@ -32,14 +37,59 @@ public class Map extends JPanel {
                 update(e);
             }
         });
-
     }
+    void startNewGame(int mode, int fieldSizeX, int fieldSizeY, int winLen) {
+        this.fieldSizeX = fieldSizeX;
+        this.fieldSizeY = fieldSizeY;
+        this.winLen = winLen;
+        this.mode = mode;
+        field = new int[fieldSizeY][fieldSizeX];
+        cross = new Cross(fieldSizeX,fieldSizeY,winLen);
 
+        finished = false;
+        isInitialized = true;
+        repaint();
+    }
+    void checkState(int x, int y){
+        if (cross.isDraw()) {
+            finished = true;
+            System.out.println("Ничья");
+        }
+        if (x > -1 && y > -1) {
+            if (cross.checkWin(y, x, cross.PLAYER_DOT, winLen)) {
+                finished = true;
+                System.out.println("Игрок победил");
+            }
+            if (cross.checkWin(y, x, cross.AI_DOT, winLen)) {
+                finished = true;
+                System.out.println("AI победил");
+            }
+        }
+    }
     void update(MouseEvent e) {
         int cellX = e.getX() / cellWidth;
-        int cellY = e.getY() / cellheigth;
+        int cellY = e.getY() / cellHeigth;
 
         System.out.println("x: " + cellX + " y: " + cellY);
+        if (cross.isCellValid(cellY, cellX)) {
+            field[cellY][cellX] = 1;
+            cross.playerStep(cellX, cellY);
+            checkState(cellX, cellY);
+            if (finished) {
+                startNewGame(mode,fieldSizeX,fieldSizeY,winLen);
+                return;
+            }
+            cross.aiStep();
+            cellX = cross.last_x;
+            cellY = cross.last_y;
+            field[cellY][cellX] = 2;
+            checkState(cellX, cellY);
+            if (finished) {
+                startNewGame(mode,fieldSizeX,fieldSizeY,winLen);
+                return;
+            }
+        } else System.out.println("Неверная ячейка");
+
         repaint();
     }
 
@@ -50,36 +100,46 @@ public class Map extends JPanel {
     }
 
     void render(Graphics g) {
-
         if (!isInitialized) return;
-
         int panelWidth = getWidth();
         int panelHeigth = getHeight();
-
-        cellheigth = panelHeigth / fieldSizeY;
+        cellHeigth = panelHeigth / fieldSizeY;
         cellWidth = panelWidth / fieldSizeX;
-
-        g.fillOval(20,20,20,20);
-
-        for (int i = 0; i < fieldSizeY; i++) {
-            int y = i * cellheigth;
-            g.drawLine(0,y,panelWidth,y);
-        }
-
-        for (int i = 0; i < fieldSizeX; i++) {
-            int x = i * cellWidth;
-            g.drawLine(x,0,x,panelHeigth);
-        }
-
+        for (int i = 0; i < fieldSizeY; i++) g.drawLine(0,i * cellHeigth,panelWidth,i * cellHeigth);
+        for (int i = 0; i < fieldSizeX; i++) g.drawLine(i * cellWidth,0,i * cellWidth,panelHeigth);
+        for (int i = 0; i < fieldSizeY; i++) for (int j = 0; j < fieldSizeX; j++) drawSym(g, i, j);
     }
-
-    void startNewGame(int mode, int fieldSizeX, int fieldSizeY, int winLen) {
-        this.fieldSizeX = fieldSizeX;
-        this.fieldSizeY = fieldSizeY;
-        this.winLen = winLen;
-        field = new int[fieldSizeY][fieldSizeX];
-
-        isInitialized = true;
-        repaint();
+    void drawEmpty(Graphics2D g, int i, int j) {    }
+    void drawO(Graphics2D g, int i, int j) {
+        int x = j * cellWidth + cellWidth / 20;
+        int y = i * cellHeigth + cellHeigth / 20;
+        int w = cellWidth * 9 / 10;
+        int h = cellHeigth * 9 / 10;
+        g.fillOval(x,y,w,h);
+    }
+    void drawX(Graphics2D g, int i, int j) {
+        int x1 = j * cellWidth + cellWidth / 10;
+        int x2 = j * cellWidth + cellWidth * 9 / 10;
+        int y1 = i * cellHeigth + cellHeigth / 10;
+        int y2 = i * cellHeigth + cellHeigth * 9 / 10;
+        g.drawLine(x1,y1,x2,y2);
+        g.drawLine(x2,y1,x1,y2);
+    }
+    void drawSym(Graphics gr, int i, int j) {
+        Graphics2D g = (Graphics2D)gr;
+        //создаем "кисть" для рисования
+        BasicStroke pen = new BasicStroke(20); //толщина линии 20
+        g.setStroke(pen);
+        switch (field[i][j]) {
+            case 1:
+                drawX(g, i, j);
+                break;
+            case 2:
+                drawO(g, i, j);
+                break;
+            default:
+                drawEmpty(g, i, j);
+                break;
+        }
     }
 }

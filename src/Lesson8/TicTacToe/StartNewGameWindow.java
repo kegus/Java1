@@ -1,7 +1,5 @@
 package Lesson8.TicTacToe;
 
-//import Lesson_5.Main;
-
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;

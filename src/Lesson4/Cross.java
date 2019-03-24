@@ -4,32 +4,39 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Cross {
-    private static int SIZE_X = 9;
-    private static int SIZE_Y = 9;
-    private static int COUNT_DOT_FOR_WIN = 5;
+    public int SIZE_X;
+    public int SIZE_Y;
+    public int COUNT_DOT_FOR_WIN = 5;
+    public char[][] field;
+    private Random rnd;
+    public int last_x, last_y;
 
-    private static char[][] field = new char[SIZE_Y][SIZE_X];
+    public Cross(int SIZE_X, int SIZE_Y, int COUNT_DOT_FOR_WIN) {
+        this.SIZE_X = SIZE_X;
+        this.SIZE_Y = SIZE_Y;
+        this.COUNT_DOT_FOR_WIN = COUNT_DOT_FOR_WIN;
+        field = new char[SIZE_Y][SIZE_X];
+        initField();
+        rnd = new Random();
+    }
 
-    private static char PLAYER_DOT = 'X';
-    private static char AI_DOT = 'O';
-    private static char EMPTY_DOT = '.';
+    public final char PLAYER_DOT = 'X';
+    public final char AI_DOT = 'O';
+    public final char EMPTY_DOT = '.';
 
-    private static Scanner sc = new Scanner(System.in);
-    private static Random rnd = new Random();
-    private static int last_x, last_y;
-
+    //private static Scanner sc = new Scanner(System.in);
     // заполнить поле
-    private static void initField() {
+    public void initField() {
         for (int i = 0; i < SIZE_Y; i++) for (int j = 0; j < SIZE_X; j++) field[i][j] = EMPTY_DOT;
     }
     // печать верхней и нижней границ
-    private static void printBorder(int count){
+    private void printBorder(int count){
         System.out.print("  -");
         for (int i = 0; i < count; i++) System.out.print("-");
         System.out.println();
     }
     // метод для вывода на консоль поля
-    private static void printField() {
+    private void printField() {
         System.out.print("   ");
         for (int i = 0; i < SIZE_X; i++) System.out.print(""+(i+1)+" ");
         System.out.println();
@@ -44,15 +51,15 @@ public class Cross {
         printBorder(SIZE_X*2);
     }
     // метод для установки символа
-    private static void setSym(int y, int x, char sym) {
+    private void setSym(int y, int x, char sym) {
         field[y][x] = sym;
     }
     // проверка валидности ячейки
-    private static boolean isCellValid(int y, int x) {
+    public boolean isCellValid(int y, int x) {
         return field[y][x] == EMPTY_DOT;
     }
     // проверка валидности введённого хода
-    private static boolean isStepValid(String step){
+    private boolean isStepValid(String step){
         if(step.length()==3){
             int x = getStepX(step);
             int y = getStepY(step);
@@ -60,7 +67,7 @@ public class Cross {
         }
         return false;
     }
-    private static int getStepX(String step){
+    private int getStepX(String step){
         int res = 0;
         try {
             res = Integer.parseInt(step.substring(0,1));
@@ -70,7 +77,7 @@ public class Cross {
         }
         return res;
     }
-    private static int getStepY(String step){
+    private int getStepY(String step){
         int res = 0;
         try {
             res = Integer.parseInt(step.substring(2));
@@ -81,24 +88,22 @@ public class Cross {
         return res;
     }
     // ход человека
-    private static boolean playerStep() {
-        int x;
-        int y;
-        String step;
+    public boolean playerStep(int x, int y) {
+        /*String step;
         do {
             System.out.println("Введите координаты: X (1 - "+SIZE_X+") Y (1 - "+SIZE_Y+")");
             step = sc.nextLine();
             if(step.equals("exit")) return false;
         } while (!isStepValid(step));
         x = getStepX(step)-1;
-        y = getStepY(step)-1;
+        y = getStepY(step)-1;*/
         setSym(y, x, PLAYER_DOT);
         last_x = x;
         last_y = y;
         return true;
     }
     // проверка хода на комбинацию из dot_count символов
-    private static void calculateAIstep(int[] xy, int dot_count, char sym){
+    private void calculateAIstep(int[] xy, int dot_count, char sym){
         int l = dot_count == COUNT_DOT_FOR_WIN ? 0 : 1;
         chek: for (int k = 0; k < 3; k++) {
             for (int j = l; j < SIZE_X-l; j++) {
@@ -118,7 +123,7 @@ public class Cross {
         }
     }
     // ход ПК
-    private static void aiStep() {
+    public void aiStep() {
         int[] xy = {-1,-1};
         // проверяем возможность победы AI
         calculateAIstep(xy, COUNT_DOT_FOR_WIN, AI_DOT);
@@ -143,12 +148,12 @@ public class Cross {
         last_y = xy[0];
     }
     // если не встретили пустую ячейку это значит что всё поле заполнено
-    private static boolean isDraw() {
+    public boolean isDraw() {
         for (int i = 0; i < SIZE_Y; i++) for (int j = 0; j < SIZE_X; j++) if(field[i][j] == EMPTY_DOT) return false;
         return true;
     }
     // проверка горизонталей
-    private static boolean checkHorizontal(int y, int x, char sym, int dot_count){
+    private boolean checkHorizontal(int y, int x, char sym, int dot_count){
         int find_count;
         for (int i = x-dot_count+1; i < x+dot_count-1; i++) {
             find_count = 0;
@@ -163,7 +168,7 @@ public class Cross {
         return false;
     }
     // проверка вертикалей
-    private static boolean checkVertical(int y, int x, char sym, int dot_count){
+    private boolean checkVertical(int y, int x, char sym, int dot_count){
         int find_count;
         for (int j = y-dot_count+1; j < y+dot_count-1; j++) {
             find_count = 0;
@@ -178,7 +183,7 @@ public class Cross {
         return false;
     }
     // проверка диагоналей
-    private static boolean checkDiagonal(int y, int x, char sym, int dot_count){
+    private boolean checkDiagonal(int y, int x, char sym, int dot_count){
         int find_count;
         for (int i = y-dot_count+1, j = x-dot_count+1; i < y+dot_count-1 && j < x+dot_count-1; i++,j++) {
             find_count = 0;
@@ -209,10 +214,10 @@ public class Cross {
         return false;
     }
     // проверка победы
-    private static boolean checkWin(int y, int x, char sym, int dot_count) {
+    public boolean checkWin(int y, int x, char sym, int dot_count) {
         return (checkDiagonal(y,x,sym,dot_count) ||checkHorizontal(y,x,sym,dot_count) || checkVertical(y,x,sym,dot_count));
     }
-    private static boolean checkProbableWin(int y, int x, char sym, int dot_count, int mode) {
+    private boolean checkProbableWin(int y, int x, char sym, int dot_count, int mode) {
         switch (mode) {
             case 0: return checkDiagonal(y,x,sym,dot_count);
             case 1: return checkHorizontal(y,x,sym,dot_count);
@@ -221,7 +226,7 @@ public class Cross {
         }
     }
     // main
-    private static void cross() {
+    /*private static void cross() {
         exit: while (true){
             System.out.println();
             System.out.println("Сыграем в крестики-нолики до "+COUNT_DOT_FOR_WIN);
@@ -259,5 +264,5 @@ public class Cross {
     public static void main(String[] args) {
         cross();
         sc.close();
-    }
+    }*/
 }

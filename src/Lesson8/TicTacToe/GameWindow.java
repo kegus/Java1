@@ -9,8 +9,8 @@ public class GameWindow extends JFrame {
 
     private static final int WIN_HEIGHT = 555;
     private static final int WIN_WIDTH = 508;
-    private static final int WIN_POS_X = 800;
-    private static final int WIN_POS_Y = 300;
+    private static final int WIN_POS_X = 300;
+    private static final int WIN_POS_Y = 100;
 
     private static Map field;
     private static StartNewGameWindow startNewGameWindow;
