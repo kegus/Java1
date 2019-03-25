@@ -13,8 +13,8 @@ public class StartNewGameWindow extends JFrame {
     private static final int WIN_WIDTH = 350;
     private static final int MIN_WIN_LEN = 3;
     private static final int MIN_FIELD_SIZE = 3;
-    private static final int MAX_WIN_LEN = 10;
-    private static final int MAX_FIELD_SIZE = 10;
+    private static final int MAX_WIN_LEN = 9;
+    private static final int MAX_FIELD_SIZE = 9;
     private static final String STR_WIN_LEN = "Winning Length: ";
     private static final String STR_FIELD_SIZE = "FIELD_SIZE: ";
 

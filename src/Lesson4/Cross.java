@@ -88,6 +88,12 @@ public class Cross {
         return res;
     }
     // ход человека
+    public boolean playerStep2(int x, int y) {
+        setSym(y, x, AI_DOT);
+        last_x = x;
+        last_y = y;
+        return true;
+    }
     public boolean playerStep(int x, int y) {
         /*String step;
         do {

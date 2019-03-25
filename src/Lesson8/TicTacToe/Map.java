@@ -24,6 +24,8 @@ public class Map extends JPanel {
 
     boolean finished;
 
+    boolean player1 = false;
+
     Cross cross;
 
     boolean isInitialized = false;
@@ -55,14 +57,27 @@ public class Map extends JPanel {
             finished = true;
             System.out.println("Ничья");
         }
-        if (x > -1 && y > -1) {
-            if (cross.checkWin(y, x, cross.PLAYER_DOT, winLen)) {
-                finished = true;
-                System.out.println("Игрок победил");
+        if (mode == MODE_H_V_A) {
+            if (x > -1 && y > -1) {
+                if (cross.checkWin(y, x, cross.PLAYER_DOT, winLen)) {
+                    finished = true;
+                    System.out.println("Игрок победил");
+                }
+                if (cross.checkWin(y, x, cross.AI_DOT, winLen)) {
+                    finished = true;
+                    System.out.println("AI победил");
+                }
             }
-            if (cross.checkWin(y, x, cross.AI_DOT, winLen)) {
-                finished = true;
-                System.out.println("AI победил");
+        } else {
+            if (x > -1 && y > -1) {
+                if (cross.checkWin(y, x, cross.PLAYER_DOT, winLen)) {
+                    finished = true;
+                    System.out.println("Игрок1 победил");
+                }
+                if (cross.checkWin(y, x, cross.AI_DOT, winLen)) {
+                    finished = true;
+                    System.out.println("Игрок2 победил");
+                }
             }
         }
     }
@@ -71,24 +86,47 @@ public class Map extends JPanel {
         int cellY = e.getY() / cellHeigth;
 
         System.out.println("x: " + cellX + " y: " + cellY);
-        if (cross.isCellValid(cellY, cellX)) {
-            field[cellY][cellX] = 1;
-            cross.playerStep(cellX, cellY);
-            checkState(cellX, cellY);
-            if (finished) {
-                startNewGame(mode,fieldSizeX,fieldSizeY,winLen);
-                return;
-            }
-            cross.aiStep();
-            cellX = cross.last_x;
-            cellY = cross.last_y;
-            field[cellY][cellX] = 2;
-            checkState(cellX, cellY);
-            if (finished) {
-                startNewGame(mode,fieldSizeX,fieldSizeY,winLen);
-                return;
-            }
-        } else System.out.println("Неверная ячейка");
+        if (mode == MODE_H_V_A) {
+            if (cross.isCellValid(cellY, cellX)) {
+                field[cellY][cellX] = 1;
+                cross.playerStep(cellX, cellY);
+                checkState(cellX, cellY);
+                if (finished) {
+                    startNewGame(mode, fieldSizeX, fieldSizeY, winLen);
+                    return;
+                }
+                cross.aiStep();
+                cellX = cross.last_x;
+                cellY = cross.last_y;
+                field[cellY][cellX] = 2;
+                checkState(cellX, cellY);
+                if (finished) {
+                    startNewGame(mode, fieldSizeX, fieldSizeY, winLen);
+                    return;
+                }
+            } else System.out.println("Неверная ячейка");
+        } else {
+            if (cross.isCellValid(cellY, cellX)) {
+                player1 = !player1;
+                if (player1){
+                    field[cellY][cellX] = 1;
+                    cross.playerStep(cellX, cellY);
+                    checkState(cellX, cellY);
+                    if (finished) {
+                        startNewGame(mode, fieldSizeX, fieldSizeY, winLen);
+                        return;
+                    }
+                } else {
+                    field[cellY][cellX] = 2;
+                    cross.playerStep2(cellX, cellY);
+                    checkState(cellX, cellY);
+                    if (finished) {
+                        startNewGame(mode, fieldSizeX, fieldSizeY, winLen);
+                        return;
+                    }
+                }
+            } else System.out.println("Неверная ячейка");
+        }
 
         repaint();
     }
@@ -128,7 +166,7 @@ public class Map extends JPanel {
     void drawSym(Graphics gr, int i, int j) {
         Graphics2D g = (Graphics2D)gr;
         //создаем "кисть" для рисования
-        BasicStroke pen = new BasicStroke(20); //толщина линии 20
+        BasicStroke pen = new BasicStroke(20-fieldSizeY*2); //толщина линии 20
         g.setStroke(pen);
         switch (field[i][j]) {
             case 1:

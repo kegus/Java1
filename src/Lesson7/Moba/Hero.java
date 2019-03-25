@@ -1,5 +1,7 @@
 package Lesson7.Moba;
 
+import javax.swing.*;
+
 public  class Hero {
     protected String name;
     protected String type;
@@ -28,5 +30,8 @@ public  class Hero {
 
     void info() {
         System.out.println(name + " (" + type + ") HP: " + health + " D:" + damage+ " K:" + countKill + " Rip: " + isKilled);
+    }
+    void infoGraph(JTextArea resTextArea) {
+        resTextArea.append(name + " (" + type + ") HP: " + health + " D:" + damage+ " K:" + countKill + " Rip: " + isKilled + "\n");
     }
 }

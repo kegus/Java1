@@ -1,5 +1,6 @@
 package Lesson7.Moba;
 
+import javax.swing.*;
 import java.util.Random;
 
 final class Warrior extends Hero {
@@ -45,6 +46,24 @@ public class Warriors {
         contentWarriors = new Hero[CNT_NUMEROF_WARIORS];
         generateWarriors();
     }
+    public Warriors(String name, int cnt) {
+        this.name = name;
+        CNT_NUMEROF_WARIORS = cnt;
+        this.contentWarriors = new Hero[cnt];
+    }
+    public void addHero(String name, int type, int index){
+        switch (type) {
+            case 0:
+                contentWarriors[index] = new Warrior(name+" Warrior","Warrior", 100, 30);
+                break;
+            case 1:
+                contentWarriors[index] = new Killer(name+" Killer","Killer", 80, 50);
+                break;
+            case 2:
+                contentWarriors[index] = new Healer(name+" Healer","Healer", 70, 10, 20);
+                break;
+        }
+    }
     private void generateWarriors(){
         for (int i = 0; i < CNT_NUMEROF_WARIORS; i++) {
             switch (i % 3) {
@@ -77,6 +96,35 @@ public class Warriors {
                 if(!contentWarriors[n].isFired && !contentWarriors[n].isKilled) break;
             } while (true);
         return n;
+    }
+    public void makeTurnGaph(Warriors alien, JTextArea resTextArea){
+        if (!isDead() && existNotFired())
+        {
+            int i = getRndSelfFired();
+            if (i >= 0) {
+                if (!alien.isDead()){
+                    int j = getRndAliveAlien(alien);
+                    contentWarriors[i].hit(alien.contentWarriors[j]);
+                    resTextArea.append(contentWarriors[i].name+" hit "+contentWarriors[i].damage+" to "+alien.contentWarriors[j].name+
+                            " (HP: "+alien.contentWarriors[j].health+")" + (alien.contentWarriors[j].isKilled?" убит":"")+"\n");
+                    if (contentWarriors[i].type == "Healer") {
+                        for (int k = 0; k < CNT_NUMEROF_WARIORS; k++) if (i != k)
+                            if (!contentWarriors[k].isKilled){
+                                ((Healer)contentWarriors[i]).healing(contentWarriors[k]);
+                                resTextArea.append(contentWarriors[i].name+" heal "+((Healer)contentWarriors[i]).healAvailbl+" to "+contentWarriors[k].name+
+                                        " (HP: "+contentWarriors[k].health+") \n");
+                            }
+                    }
+                    contentWarriors[i].isFired = true;
+                }
+            } else {
+                resTextArea.append("команда "+name+" makeTurn i < 0 \n");
+                for (int j = 0; j < CNT_NUMEROF_WARIORS; j++) contentWarriors[j].isFired = false;
+            }
+        } else {
+            resTextArea.append("команда "+name+" все выстрелили \n");
+            for (int j = 0; j < CNT_NUMEROF_WARIORS; j++) contentWarriors[j].isFired = false;
+        }
     }
     public void makeTurn(Warriors alien){
         if (!isDead() && existNotFired())
